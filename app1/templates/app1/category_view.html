@@ -1,0 +1,16 @@
+{% extends 'app1/base.html' %}
+
+{% block content %}
+    {% if message %}
+	    <h4>{{ message }}</h4>
+    {% endif %}
+
+    Lista Kategorii:
+    <ul>
+    {% for category in categories %}
+        <li><a href="#">{{ category.name }}</a></li>
+    {% endfor %}
+
+    </ul>
+
+{% endblock %}

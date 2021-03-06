@@ -1,0 +1,16 @@
+{% extends 'app1/base.html' %}
+
+{% block content %}
+    {% if message %}
+	    <h4>{{ message }}</h4>
+    {% endif %}
+
+    Lista Rozmiarów:
+    <ul>
+    {% for size in sizes %}
+        <li><a href="#">{{ size.name }}</a></li>
+    {% endfor %}
+
+    </ul>
+
+{% endblock %}

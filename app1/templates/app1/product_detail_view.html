@@ -1,0 +1,22 @@
+{% extends 'app1/base.html' %}
+
+{% block content %}
+    {% if message %}
+	    <h4>{{ message }}</h4>
+    {% endif %}
+
+    Produkt:<br>
+    name: {{ product.name }}<br>
+    description: {{ product.description }}<br>
+    price: {{ product.price }}<br>
+    current quantity: {{ product.current_quantity }}<br>
+    size: {{ product.size }}<br>
+    category:
+    {% for category in categories %}
+        {{ category}}<br>
+    {% endfor %}
+
+
+
+
+{% endblock %}
