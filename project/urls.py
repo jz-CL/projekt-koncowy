@@ -16,18 +16,30 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 
-from app1.views import CategoryView, CategoryAddView, SizeView, SizeAddView, ProductView, ProductAddView, \
-    ProductDetailView
+from app1.views import (
+    CategoryView, CategoryAddView,
+    SizeView, SizeAddView, SizeDetailView,
+    BrandView, BrandAddView, BrandDetailView,
+    ColorView, ColorAddView, ColorDetailView,
+    ProductView, ProductAddView, ProductDetailView,
 
+)
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('category/', CategoryView.as_view(), name='category'),
     path('category_add/', CategoryAddView.as_view(), name='category_add'),
     path('size/', SizeView.as_view(), name='size'),
     path('size_add/', SizeAddView.as_view(), name='size_add'),
+    path('size_detail/<int:pk>', SizeDetailView.as_view(), name='size_detail'),
+    path('brand/', BrandView.as_view(), name='brand'),
+    path('brand_add/', BrandAddView.as_view(), name='brand_add'),
+    path('brand_detail/<int:pk>', BrandDetailView.as_view(), name='brand_detail'),
+    path('color/', ColorView.as_view(), name='color'),
+    path('color_add/', ColorAddView.as_view(), name='color_add'),
+    path('color_detail/<int:pk>', ColorDetailView.as_view(), name='color_detail'),
     path('product/', ProductView.as_view(), name='product'),
     path('product_add/', ProductAddView.as_view(), name='product_add'),
-    path('product_detail/<int:pk>', ProductDetailView.as_view(), name='product_add'),
+    path('product_detail/<int:pk>', ProductDetailView.as_view(), name='product_detail'),
 
 
 ]

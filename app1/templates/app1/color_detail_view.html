@@ -1,0 +1,18 @@
+{% extends 'app1/base.html' %}
+
+{% block content %}
+    {% if message %}
+	    <h4>{{ message }}</h4>
+    {% endif %}
+
+    Kolor:<br>
+    name: {{ color.name }}<br>
+    kod: {{ color.kod }}<br>
+
+    <br>
+    <br>
+    ----------------------------------
+    </br>
+    <a href="{% url 'color' %}"> << Kolor  </a>
+
+{% endblock %}
