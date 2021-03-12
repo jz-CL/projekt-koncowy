@@ -45,7 +45,7 @@ class Product(models.Model):
     description = models.CharField(max_length=255)
     price = models.DecimalField(max_digits=5, decimal_places=2)
     # identyfikator
-    identifier_exists = models.CharField(max_length=32, unique=True)
+    identifier_exists = models.CharField(max_length=32)
     current_quantity = models.IntegerField()
     # size = models.ForeignKey(Size, on_delete=models.CASCADE, related_name='products')
     size = models.ManyToManyField(Size, related_name='products')

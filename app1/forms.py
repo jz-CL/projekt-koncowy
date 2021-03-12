@@ -1,7 +1,7 @@
 from django import forms
 from django.core.exceptions import ValidationError
 
-from app1.models import Category, Size
+from app1.models import Category, Size, Brand, Color
 
 
 class CategoryAddForm(forms.Form):
@@ -31,7 +31,7 @@ class SizeAddForm(forms.Form):
             raise forms.ValidationError('Brak rozmiaru!')
 
         if len(kod) != self.KOD_LENGTH:
-            raise forms.ValidationError(f'Kod ma {self.KOD_LENGTH} znaki!')
+            raise forms.ValidationError(f'Kod ma mieć {self.KOD_LENGTH} znaki!')
 
 class BrandAddForm(forms.Form):
     KOD_LENGTH = 2
@@ -74,6 +74,8 @@ class ProductAddForm(forms.Form):
     current_quantity = forms.IntegerField()
     category = forms.ModelChoiceField(queryset=Category.objects.all())
     size = forms.ModelChoiceField(queryset=Size.objects.all())
+    brand = forms.ModelChoiceField(queryset=Brand.objects.all())
+    color = forms.ModelChoiceField(queryset=Color.objects.all())
 
 
     def clean(self):

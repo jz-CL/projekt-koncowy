@@ -1,13 +1,13 @@
 from django.core.management.base import BaseCommand
-from app1.management.commands._private import create_size, create_category, create_color, create_brand
+from app1.management.commands._private import create_size, create_category, create_color, create_brand, create_product
 
 class Command(BaseCommand):
     help = 'Displays current time'
 
     def handle(self, *args, **options):
-        # generate_grades(show_grades, grades_amount)
         create_size()
         create_category()
         create_color()
         create_brand()
+        create_product()
         self.stdout.write(self.style.SUCCESS("dopisane"))

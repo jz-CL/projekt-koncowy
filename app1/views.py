@@ -13,6 +13,7 @@ from app1.models import Category, Size, Product, Color, Brand
 
 # TODO modyfikacja rekordów Category, Size, Product, Color, Brand
 # TODO unikalny numer identyfikacyjny
+# TODO tablica zestawów kompletowanych towarów
 
 # ------------------------ Category ------------------------
 
@@ -356,6 +357,9 @@ class ProductAddView(View):
             current_quantity = form.cleaned_data.get('current_quantity')
             category = form.cleaned_data.get('category')
             size = form.cleaned_data.get('size')
+            brand = form.cleaned_data.get('brand')
+            color = form.cleaned_data.get('color')
+
 
 
             # breakpoint()
@@ -364,10 +368,12 @@ class ProductAddView(View):
                 product = Product()
 
                 product.name = name
+                product.brand = brand
+                product.color = color
                 product.description = description
                 product.price = price
                 product.current_quantity = current_quantity
-                breakpoint()
+                # breakpoint()
                 # product.size = size
                 # product.category = category
                 # breakpoint()
@@ -377,7 +383,9 @@ class ProductAddView(View):
                 # import secrets
                 #
                 # random_string = secrets.token_hex(8)
-                product.identifier_exists = (name[:3] + '-' + str(size)).upper() + '-' + secrets.token_hex(8)
+                product.identifier_exists = brand.kod+category.kod+size.kod
+                                            # +datetime.now().strftime("%y%m%d%H%M%S")+name[:3].upper()+'-'+color.kod
+                    # (name[:3] + '-' + str(size)).upper() + '-' + secrets.token_hex(8)
 
                 product.save()
                 # https://docs.djangoproject.com/en/3.1/topics/db/examples/many_to_many/
