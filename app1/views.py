@@ -1,19 +1,24 @@
+from django.contrib.auth import get_user_model
 from django.contrib import messages
-from django.shortcuts import render, redirect
 
+from django.shortcuts import render, redirect, get_object_or_404
 from django.views import View
 from django.core.exceptions import ValidationError
 
 import secrets
 from datetime import datetime
+
 # Create your views here.
 from app1.forms import CategoryAddForm, SizeAddForm, BrandAddForm, ColorAddForm, ProductAddForm
 from app1.models import Category, Size, Product, Color, Brand
 
 
 # TODO modyfikacja rekordów Category, Size, Product, Color, Brand
-# TODO unikalny numer identyfikacyjny
+# ToDo jeśli jest dodawany towar a jest już w bazie to stan na magazynie
 # TODO tablica zestawów kompletowanych towarów
+# ToDo 404
+
+User = get_user_model()
 
 # ------------------------ Category ------------------------
 
@@ -144,10 +149,12 @@ class SizeDetailView(View):
 
     def get(self, request, *args, **kwargs):
         message = None
-        #  404
+
         size_id = kwargs['pk']
 
-        size = Size.objects.get(pk=size_id)
+        # size = Size.objects.get(pk=size_id)
+        #  404
+        size = get_object_or_404(Size, pk=size_id)
 
         ctx = {
             'size': size,
@@ -226,11 +233,12 @@ class BrandDetailView(View):
 
     def get(self, request, *args, **kwargs):
         message = None
-        #  404
+
         brand_id = kwargs['pk']
 
-        brand = Brand.objects.get(pk=brand_id)
-
+        # brand = Brand.objects.get(pk=brand_id)
+        #  404
+        brand = get_object_or_404(Brand, pk=brand_id)
         ctx = {
             'brand': brand,
             'message': message
@@ -308,10 +316,12 @@ class ColorDetailView(View):
 
     def get(self, request, *args, **kwargs):
         message = None
-        #  404
+
         color_id = kwargs['pk']
 
-        color = Color.objects.get(pk=color_id)
+        # color = Color.objects.get(pk=color_id)
+        #  404
+        color = get_object_or_404(Color, pk=color_id)
 
         ctx = {
             'color': color,
@@ -412,10 +422,12 @@ class ProductDetailView(View):
 
     def get(self, request, *args, **kwargs):
         message = None
-        #  404
+
         product_id = kwargs['pk']
 
-        product = Product.objects.get(pk=product_id)
+        # product = Product.objects.get(pk=product_id)
+        #  404
+        product = get_object_or_404(Product, pk=product_id)
         categories = product.category.all()
         ctx = {
             'product': product,
@@ -427,3 +439,7 @@ class ProductDetailView(View):
 
 
 # ------------------------ class ------------------------
+
+
+
+

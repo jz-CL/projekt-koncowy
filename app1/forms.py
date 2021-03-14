@@ -84,3 +84,4 @@ class ProductAddForm(forms.Form):
 
         if name == '':
             raise forms.ValidationError('Brak towaru!')
+
