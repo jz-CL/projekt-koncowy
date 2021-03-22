@@ -1,4 +1,5 @@
-{% extends 'base.html' %}
+{#{% extends 'app1/base.html' %}#}
+{% extends "app1/__base__.html" %}
 
 
 {% block content %}
@@ -9,6 +10,9 @@
     <form action="" method="POST">
         {% csrf_token %}
         {{ form.as_p }}
-        <p><input type="submit" value="Send"></p>
+        <p><input type="submit" value="Zaloguj się"></p>
     </form>
+
+    <a href="{% url 'accounts:add-user' %}"><< Zarejestruj się!  </a>
+
 {% endblock %}

@@ -1,18 +1,37 @@
-{% extends 'app1/base.html' %}
+{#{% extends 'app1/base.html' %}#}
+{% extends "app1/__base__.html" %}
 
 {% block content %}
     {% if message %}
 	    <h4>{{ message }}</h4>
     {% endif %}
+   <div class="m-4 p-4 border-dashed">
+        <table class="table">
+            <h2 class="dashboard-content-title">
+            Size:<br>
+        </h2>
+        <tbody>
+  <tr class="d-flex">
+            <td class="col-3">{{ size.name }}, {{ size.kod }}
+            </td>
 
-    Size:<br>
-    name: {{ size.name }}<br>
-    kod: {{ size.kod }}<br>
+             <td class="col-1">
+            </td>
+        </tr>
+{#    name: {{ size.name }}<br>#}
+{#    kod: {{ size.kod }}<br>#}
 
-    <br>
-    <br>
+<br>
+
+
+            </tbody>
+    </table>
+      <br>
     ----------------------------------
-    </br>
-    <a href="{% url 'size' %}"> << Size  </a>
+ </br>
+    <a href="{% url 'size' %}"
+    class="btn btn-warning rounded-0">Lista rozmiarów</a>
+    </a>
+    </div>
 
 {% endblock %}

@@ -1,16 +1,44 @@
-{% extends 'app1/base.html' %}
+{#{% extends 'app1/base.html' %}#}
+{% extends "app1/__base__.html" %}
 
 {% block content %}
     {% if message %}
 	    <h4>{{ message }}</h4>
     {% endif %}
 
-    Lista Brandów:
-    <ul>
-    {% for brand in brands %}
-        <li><a href="/brand_detail/{{ brand.pk }}">{{ brand.name }}, {{ brand.kod }}</a></li>
-    {% endfor %}
+    <div class="m-4 p-4 border-dashed">
+        <table class="table">
 
-    </ul>
+        <h2 class="dashboard-content-title">
 
+            Lista Brandów:
+        </h2>
+        <tbody>
+
+        {% for brand in brands %}
+             <tr class="d-flex">
+                <td class="col-8">{{ brand.name }}</td>
+
+                 <td class="col-3">{{ brand.kod }}</td>
+
+                 <td class="col-5">
+                    <a href="/brand_detail/{{ brand.pk }}"
+                    class="btn btn-warning rounded-0">Szczegóły</a>
+                </td>
+             </tr>
+
+        {% endfor %}
+        </tbody>
+        </table>
+    ----------------------------------
+ </br>
+    <a href="{% url 'brand_add' %}"
+    class="btn btn-warning rounded-0">Dodaj</a>
+    </a>
+ </br></br>
+    <a href="{% url 'dashboard' %}"
+    class="btn btn-warning rounded-0">Dashboard</a>
+    </a>
+
+    </div>
 {% endblock %}

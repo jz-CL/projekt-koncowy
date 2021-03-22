@@ -1,15 +1,28 @@
-{% extends "app1/base.html" %}
+{#{% extends "app1/base.html" %}#}
+{% extends "app1/__base__.html" %}
 
 {% block content %}
     {% if message %}
 	    <h4>{{ message }}</h4>
     {% endif %}
-<form action="#" method="post">
-    {% csrf_token %}
 
-    {{ form.as_p }}<br/>
+ <div class="m-4 p-4 border-dashed">
+        <table class="table">
 
-    <input type="submit" value="Dodaj"/>
-</form>
+            <h2 class="dashboard-content-title">
 
+                Nowy kolor:
+            </h2>
+            <tbody>
+
+                <form action="#" method="post">
+                    {% csrf_token %}
+
+                    {{ form.as_p }}<br/>
+
+                    <input type="submit" value="Dodaj"/>
+                </form>
+            </tbody>
+        </table>
+    </div>
 {% endblock %}

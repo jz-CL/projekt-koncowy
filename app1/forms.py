@@ -1,7 +1,7 @@
 from django import forms
 from django.core.exceptions import ValidationError
 
-from app1.models import Category, Size, Brand, Color
+from app1.models import Category, Size, Brand, Color, Product
 
 
 class CategoryAddForm(forms.Form):
@@ -85,3 +85,7 @@ class ProductAddForm(forms.Form):
         if name == '':
             raise forms.ValidationError('Brak towaru!')
 
+# class KlientProductAddForm(forms.Form):
+#     prod = Product.objects.all()
+#     product = forms.ModelChoiceField(queryset=prod)
+    # product = forms.ModelChoiceField(queryset=(Product.objects.all())

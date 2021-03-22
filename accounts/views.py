@@ -1,4 +1,5 @@
 from django.contrib.auth import get_user_model, login, authenticate, logout
+from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.contrib import messages
 
 from django.shortcuts import render, redirect, get_object_or_404
@@ -34,7 +35,7 @@ class UserCreateView(View):
     def get(self, request, *args, **kwargs):
 
         context = {
-            'form': self.UserCreateForm()
+            'form': UserCreateForm()
 
         }
         return render(request, self.template_name, context)
@@ -42,7 +43,7 @@ class UserCreateView(View):
     def post(self, request, *args, **kwargs):
         message = None
         # form_class -> wysyła użytkownik
-        form = self.UserCreateForm(request.POST)
+        form = UserCreateForm(request.POST)
 
 
         if form.is_valid():
@@ -58,13 +59,13 @@ class UserCreateView(View):
             # tworzymy nowego użytkownika
             User.objects.create_user(
                 username=cd['login'],
-                email=cd['email'], # tu nie musimy robić walidacji, jest po stronie formularza
+                # email=cd['email'], # tu nie musimy robić walidacji, jest po stronie formularza
                 password=cd['password'], #tu może być wpisane bo create_user wywołuje make_password()
                 # make_password haszuje hasło tak jak set_password()
                 # w modelu django odwołujemy się poprzez first_name i last_name
                 # https://github.com/django/django/blob/master/django/contrib/auth/models.py#L340
-                last_name=cd['surname'],
-                first_name=cd['name'],
+                # last_name=cd['surname'],
+                # first_name=cd['name'],
 
             )
             message = 'Konto zostało poprawnie utworzone!'
@@ -135,5 +136,34 @@ class LogoutView(View):
 
         context = {
             'message': message,
+        }
+        return render(request, self.template_name, context)
+
+class ResetPasswordView(PermissionRequiredMixin, View):
+    form_class = ResetPasswordForm
+    template_name = 'accounts/reset_password.html'
+    permission_required = 'auth.change_user'
+
+    def get_user(self, pk):
+        return get_object_or_404(User, pk=pk)
+
+    def get(self, request, *args, **kwargs):
+        self.get_user(kwargs['pk'])
+        # get_or_404(User, pk=kwargs['pk'])
+        context = {
+            'form': self.form_class(),
+        }
+        return render(request, self.template_name, context)
+
+    def post(self, request, *args, **kwargs):
+        user = self.get_user(kwargs['pk'])
+        # user = get_or_404(User, pk=kwargs['pk'])
+        form = self.form_class(request.POST)
+        if form.is_valid():
+            password = form.cleaned_data['password']
+            user.set_password(password)
+            user.save()
+        context = {
+            'form': form,
         }
         return render(request, self.template_name, context)

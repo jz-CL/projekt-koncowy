@@ -1,5 +1,6 @@
+{% load static %}
 <!DOCTYPE html>
-<html lang="pl">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
@@ -12,6 +13,20 @@
 
     <footer>
         {% block footer %}
+<!--        request.user.is_authenticated jest True -->
+<!--        to -->
+<!--        pokaż aktualnie zalogowanego użytkownika-->
+        {% if request.user.is_authenticated %}
+
+<!--        manager kontekstu kontekst procesory - są dodawane do każdego widoku-->
+<!--        request jest takim kontekst procesory jest dostępny w każdym widoku -->
+            <p>Witaj {{ request.user.username }}</p>
+            <a href="{% url 'accounts:logout' %}">Logout</a>
+        {% else %}
+            <a href="{% url 'accounts:login' %}">Login</a>
+        {% endif %}
+<!--            <p>{{ request.user }}</p>-->
+
 
         {% endblock %}
     </footer>

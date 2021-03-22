@@ -1,6 +1,8 @@
 from django import forms
 from django.core.exceptions import ValidationError
+from django.contrib.auth import get_user_model
 
+User = get_user_model()
 
 class UserCreateForm(forms.Form):
     #  label='username' _> odpowiednio zmodyfikowany podpis
@@ -9,10 +11,12 @@ class UserCreateForm(forms.Form):
     login = forms.CharField(label='username')
     password = forms.CharField()
     password1 = forms.CharField(label='password')
-    name = forms.CharField()
-    surname = forms.CharField()
+
+    # tego nie ustawiaj
+    # name = forms.CharField()
+    # surname = forms.CharField()
     # https://docs.djangoproject.com/en/3.1/ref/models/fields/#emailfield
-    email = forms.EmailField()
+    # email = forms.EmailField()
 
     # https://docs.djangoproject.com/en/3.1/ref/forms/validation/#cleaning-and-validating-fields-that-depend-on-each-other
     #  walidatory

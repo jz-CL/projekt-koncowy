@@ -1,6 +1,6 @@
 from django.contrib.auth import get_user_model
 from django.contrib import messages
-
+from django.urls import reverse_lazy
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views import View
 from django.core.exceptions import ValidationError
@@ -8,18 +8,37 @@ from django.core.exceptions import ValidationError
 import secrets
 from datetime import datetime
 
-# Create your views here.
-from app1.forms import CategoryAddForm, SizeAddForm, BrandAddForm, ColorAddForm, ProductAddForm
-from app1.models import Category, Size, Product, Color, Brand
+from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
+
+
+from app1.forms import CategoryAddForm, SizeAddForm, BrandAddForm, \
+    ColorAddForm, ProductAddForm #, KlientProductAddForm
+from app1.models import Category, Size, Product, \
+    Color, Brand, Koszyk
 
 
 # TODO modyfikacja rekordów Category, Size, Product, Color, Brand
 # ToDo jeśli jest dodawany towar a jest już w bazie to stan na magazynie
 # TODO tablica zestawów kompletowanych towarów
-# ToDo 404
+# Create your views here.
 
 User = get_user_model()
 
+class DashboardView(PermissionRequiredMixin, View):
+    template_name = 'app1/dashboard.html'
+
+    permission_required = None
+
+    def get(self, request):
+
+        # count_plans = Plan.objects.all().count()
+        # count_recipes = Recipe.objects.all().count()
+        return render(request,
+                      self.template_name,
+                      context={
+                          "count_plans": 4,
+                          "count_recipes": 5}
+                      )
 # ------------------------ Category ------------------------
 
 class CategoryView(View):
@@ -27,7 +46,7 @@ class CategoryView(View):
 
     def get(self, request, *args, **kwargs):
         # category = get_object_or_404(Student, pk=student_id)
-        categories = Category.objects.all()
+        categories = Category.objects.all().order_by('name')
         ctx = {
             'categories': categories,
         }
@@ -260,7 +279,7 @@ class ColorView(View):
         return render(request, self.template_name, ctx)
 
 class ColorAddView(View):
-    template_name = 'app1/colors_add.html'
+    template_name = 'app1/color_add.html'
 
     def get(self, request, *args, **kwargs):
         form = ColorAddForm()
@@ -331,6 +350,7 @@ class ColorDetailView(View):
         return render(request, self.template_name, ctx)
 
 # ------------------------ Product ------------------------
+# obsługa koszyka
 
 class ProductView(View):
 
@@ -420,6 +440,7 @@ class ProductAddView(View):
 class ProductDetailView(View):
     template_name = 'app1/product_detail_view.html'
 
+
     def get(self, request, *args, **kwargs):
         message = None
 
@@ -428,10 +449,15 @@ class ProductDetailView(View):
         # product = Product.objects.get(pk=product_id)
         #  404
         product = get_object_or_404(Product, pk=product_id)
+        # breakpoint()
+        size = product.size.values()[0]['name']
+
+        # breakpoint()
         categories = product.category.all()
         ctx = {
             'product': product,
             'categories': categories,
+            'size': size,
             'message': message
         }
 
@@ -439,7 +465,113 @@ class ProductDetailView(View):
 
 
 # ------------------------ class ------------------------
+class KlientProductAddView(View):
+    template_name = 'app1/klient_product_add.html'
+
+    def get(self, request, *args, **kwargs):
+        products = Product.objects.all()
+        sizes = Size.objects.all()
+        categories = Category.objects.all()
+        lista_prod = []
+        element = None
+        # breakpoint()
+        for prod in products:
+            element = {
+                'pk': prod.pk,
+                'name': prod.name,
+                'price': prod.price,
+                'size': Product.objects.get(pk=prod.pk).size.values(),
+                'color': prod.color,
+                'brand': prod.brand,
+            }
+            lista_prod.append(element)
+
+        # breakpoint()
+        # Product.objects.get(pk=1).size.values()
+        # Product.objects.get(pk=1).color.values()
+
+        ctx = {
+            'product': products,
+            'sizes': sizes,
+            'categories': categories,
+            'lista_prods': lista_prod
+
+
+        }
+        # form = KlientProductAddForm()
+        # breakpoint()
+        # ctx = {
+        #     'form': form,
+        # }
+        return render(request, self.template_name, ctx)
+
+    def post(self, request, *args, **kwargs):
+        ctx = {
+            # 'form': form,
+            # 'message': message,
+            }
+        return render(request, self.template_name, ctx)
+
+class KlientProductKoszykView(LoginRequiredMixin, View):
+    template_name = 'app1/klient_product_koszyk.html'
+
+    # ograniczenie dostępu - użytkownik nie zalogowany
+    login_url = reverse_lazy('accounts:login')
+
+    success_url = 'klient-product'
+
+    def get(self, request, *args, **kwargs):
+        product_id = kwargs['pk']
+
+        product = get_object_or_404(Product, pk=product_id)
+        # breakpoint()
+        size = product.size.values()[0]['name']
+        color = product.color
+
+        ctx = {
+            'product': product,
+            'size': size,
+            'color': color,
+        }
+        return render(request, self.template_name, ctx)
+
+    def post(self, request, *args, **kwargs):
+        product_id = kwargs['pk']
+        # breakpoint()
+
+        # len_koszyk = len(Koszyk.objects.all())
+        try:
+
+            koszyk = Koszyk.objects.get(product=product_id)
+        except Koszyk.DoesNotExist:
+            koszyk = None
+
+
+            # koszyk = get_object_or_404(Koszyk, product = product_id)
+
+            # breakpoint()
+            # sprawdzaj czy jest już towar o takim id
+        if koszyk != None:
+            # koszyk = Koszyk()
+            # koszyk.product = product_id
+            koszyk.ile += 1
+            koszyk.save()
+
+        else:
+            koszyk = Koszyk()
+            # koszyk.add(product = product_id, ile = 1)
+            koszyk.product = Product.objects.get(pk=product_id)
+            koszyk.ile = 1
+            koszyk.save()
 
 
 
 
+
+
+        # breakpoint()
+        ctx = {
+            'form': form,
+            'message': message,
+            }
+        return render(request, self.template_name, ctx)

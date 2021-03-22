@@ -23,7 +23,7 @@ from app1.views import (
     ColorView, ColorAddView, ColorDetailView,
     ProductView, ProductAddView, ProductDetailView,
 
-
+    DashboardView, KlientProductAddView, KlientProductKoszykView
 )
 
 urlpatterns = [
@@ -43,6 +43,12 @@ urlpatterns = [
     path('product/', ProductView.as_view(), name='product'),
     path('product_add/', ProductAddView.as_view(), name='product_add'),
     path('product_detail/<int:pk>', ProductDetailView.as_view(), name='product_detail'),
+    path('dashboard/', DashboardView.as_view(), name='dashboard'),
+    path('', KlientProductAddView.as_view(), name='klient-product'),
+    path('dodaj_do_koszyka/<int:pk>', KlientProductKoszykView.as_view(), name='klient-product'),
+
+
+
 
 
 
