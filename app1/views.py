@@ -224,7 +224,7 @@ class SizeDetailView(View):
 
 class BrandView(View):
     '''
-    wyświetla listę dostœpnych brandów
+    wyświetla listę dostępnych brandów
     '''
     template_name = 'app1/brand_view.html'
 
@@ -239,7 +239,7 @@ class BrandView(View):
 class BrandAddView(View):
     '''
     dodaje element do listy brandów
-    sprawdza czy podany bran już istnieje
+    sprawdza czy podany brand już istnieje
     '''
 
     template_name = 'app1/brand_add.html'
@@ -712,7 +712,7 @@ class KlientKoszykView(View):
 
     def get(self, request, *args, **kwargs):
         koszyks = Koszyk.objects.all()
-        product = Product.objects.all()
+        # product = Product.objects.all()
 
         elements = []
         # breakpoint()
