@@ -61,6 +61,21 @@ def test_size_add_view(client):
     assert Size.objects.filter(kod="S1")
     assert response.status_code == 302
 
+# pytest app1/tests.py::test_size_detail_view -v --pdb
+
+@pytest.mark.django_db
+def test_size_detail_view(addSize, client):
+    response = client.get('/size_detail/1')
+
+    # url = reverse(
+    #     'size_detail', kwargs={'pk': 1}
+    # )
+    #
+    # response = client.get(url)
+
+    assert response.context['size'].name == '34'
+    assert response.status_code == 200
+
 # ------------------ color -------------------------
 # pytest app1/tests.py::test_color_view -v
 
