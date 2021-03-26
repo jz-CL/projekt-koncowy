@@ -23,30 +23,30 @@
 {#        {{ category}}<br>#}
 {#    {% endfor %}#}
     price: {{ product.price }} zł<br>
-        <form action="#" method="post">
-                    {% csrf_token %}
+        <form action="/" method="post">
+            {% csrf_token %}
 
-                    {{ form.as_p }}<br/>
-{#        jeśli zalogowany#}
+            {{ form.as_p }}<br/>
+{#          jeśli zalogowany#}
             {% if request.user.is_authenticated %}
-
-                    <input type="submit" value="Dodaj"/>
+                <input type="submit" value="Dodaj do koszyka"
+                       class="btn btn-warning rounded-0">
             {% endif %}
 {#            w przeciwnym razie idż do strony logowania #}
-                </form>
-  </tbody>
-         </table>
+        </form>
+    </tbody>
+    </table>
 
     ----------------------------------
 
- </br></br>
-        <a href="{% url 'klient-product' %}"
-    class="btn btn-warning rounded-0">Lista produktów</a>
         </br></br>
-{#    tu powinien być koszyk #}
-{#    <a href="{% url 'dashboard' %}"#}
-{#    class="btn btn-warning rounded-0">Dashboard</a>#}
-    </a>
+        <a href="{% url 'klient-product' %}"
+            class="btn btn-warning rounded-0">Lista produktów</a>
+            </br></br>
+{#          tu powinien być koszyk #}
+{#          <a href="{% url 'dashboard' %}"#}
+{#          class="btn btn-warning rounded-0">Dashboard</a>#}
+        </a>
     </div>
 
 {% endblock %}

@@ -106,6 +106,8 @@ class LoginView(View):
             if user:
                 # login user
                 login(request, user)
+                if request.GET.get('next'):
+                    return redirect(request.GET['next'])
                 message = 'Jesteś zalogowany'
             else:
                 # not login
@@ -132,7 +134,7 @@ class LogoutView(View):
             # Do something for authenticated users.
             logout(request)
             message = 'Zostałeś właśnie wylogowany'
-
+            return redirect('klient-product')
 
         context = {
             'message': message,

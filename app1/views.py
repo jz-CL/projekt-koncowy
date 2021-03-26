@@ -1,4 +1,5 @@
 from django.contrib.auth import get_user_model
+# from django.contrib.auth.models import Group
 from django.contrib import messages
 from django.urls import reverse_lazy
 from django.shortcuts import render, redirect, get_object_or_404
@@ -24,24 +25,43 @@ from app1.models import Category, Size, Product, \
 
 User = get_user_model()
 
+# class DashboardView(PermissionRequiredMixin, View):
 class DashboardView(PermissionRequiredMixin, View):
+    '''
+    zbiorczy widok dostępny do obsługi sklepu
+    '''
     template_name = 'app1/dashboard.html'
 
-    permission_required = None
+    # ograniczenie dostępu - użytkownik nie zalogowany
+    # login_url = reverse_lazy('accounts:login')
+    # tylko admin
+
+    # sprawdzamy czy użytkownik ma uprawnienia
+    permission_required = ('app1.add_brand', 'app1.add_category',
+                           'app1.add_color', 'app1.add_size', 'app1.add_product')
 
     def get(self, request):
-
-        # count_plans = Plan.objects.all().count()
-        # count_recipes = Recipe.objects.all().count()
+        count = {
+            'brand': Brand.objects.all().count(),
+            'category': Category.objects.all().count(),
+            'color': Color.objects.all().count(),
+            'product': Product.objects.all().count(),
+            'size': Size.objects.all().count(),
+        }
+        # breakpoint()
         return render(request,
                       self.template_name,
                       context={
-                          "count_plans": 4,
-                          "count_recipes": 5}
+                          "count": count,
+                      }
                       )
 # ------------------------ Category ------------------------
 
 class CategoryView(View):
+    '''
+    wyświetla listę dostępnych kategorii
+    '''
+
     template_name = 'app1/category_view.html'
 
     def get(self, request, *args, **kwargs):
@@ -53,6 +73,11 @@ class CategoryView(View):
         return render(request, self.template_name, ctx)
 
 class CategoryAddView(View):
+    '''
+    dodaj element do listy kategorii,
+    sprawdza czy podana kategoria już istnieje
+    '''
+
     template_name = 'app1/category_add.html'
 
     def get(self, request, *args, **kwargs):
@@ -101,6 +126,10 @@ class CategoryAddView(View):
 # ------------------------ Size ------------------------
 
 class SizeView(View):
+    '''
+    wyświetl listę dostępnych rozmiarów
+    '''
+
     template_name = 'app1/size_view.html'
 
     def get(self, request, *args, **kwargs):
@@ -112,6 +141,11 @@ class SizeView(View):
         return render(request, self.template_name, ctx)
 
 class SizeAddView(View):
+    '''
+    dodaj element do listy rozmiarów
+    sprawdza czy podany rozmiar już isteje
+    '''
+
     template_name = 'app1/size_add.html'
 
     def get(self, request, *args, **kwargs):
@@ -164,6 +198,10 @@ class SizeAddView(View):
         return render(request, self.template_name, ctx)
 
 class SizeDetailView(View):
+    '''
+    wyświetla rozmiar o określonym size_id
+    '''
+
     template_name = 'app1/size_detail_view.html'
 
     def get(self, request, *args, **kwargs):
@@ -185,6 +223,9 @@ class SizeDetailView(View):
 # ------------------------- Brand -------------------------
 
 class BrandView(View):
+    '''
+    wyświetla listę dostœpnych brandów
+    '''
     template_name = 'app1/brand_view.html'
 
     def get(self, request, *args, **kwargs):
@@ -196,6 +237,11 @@ class BrandView(View):
         return render(request, self.template_name, ctx)
 
 class BrandAddView(View):
+    '''
+    dodaje element do listy brandów
+    sprawdza czy podany bran już istnieje
+    '''
+
     template_name = 'app1/brand_add.html'
 
     def get(self, request, *args, **kwargs):
@@ -248,6 +294,10 @@ class BrandAddView(View):
         return render(request, self.template_name, ctx)
 
 class BrandDetailView(View):
+    '''
+    wyświetla brand o określonym brand_id
+    '''
+
     template_name = 'app1/brand_detail_view.html'
 
     def get(self, request, *args, **kwargs):
@@ -268,6 +318,10 @@ class BrandDetailView(View):
 # ------------------------ Color ------------------------
 
 class ColorView(View):
+    '''
+    wyświetla listę dostępnych kolorów
+    '''
+
     template_name = 'app1/color_view.html'
 
     def get(self, request, *args, **kwargs):
@@ -279,6 +333,11 @@ class ColorView(View):
         return render(request, self.template_name, ctx)
 
 class ColorAddView(View):
+    '''
+    dodaje element do listy kolorów
+    sprawdza czy podany kolor już istnieje
+    '''
+
     template_name = 'app1/color_add.html'
 
     def get(self, request, *args, **kwargs):
@@ -293,6 +352,8 @@ class ColorAddView(View):
         form = ColorAddForm(request.POST)
         name = None
         message = None
+
+        # breakpoint()
         if form.is_valid():
             name = form.cleaned_data.get('name')
             kod = form.cleaned_data.get('kod')
@@ -313,7 +374,7 @@ class ColorAddView(View):
                 messages.success(request, 'Dodano nowy kolor.')
 
                 # -> przekieruj na stronę kolor
-                return redirect("kolor")
+                return redirect("color")
             else:
                 # raise ValidationError('Ta kategoria już jest!')  # rzuć wyjątek
                 # breakpoint()
@@ -331,6 +392,10 @@ class ColorAddView(View):
         return render(request, self.template_name, ctx)
 
 class ColorDetailView(View):
+    '''
+    wyświetla kolor o określonym color_id
+    '''
+
     template_name = 'app1/color_detail_view.html'
 
     def get(self, request, *args, **kwargs):
@@ -350,9 +415,12 @@ class ColorDetailView(View):
         return render(request, self.template_name, ctx)
 
 # ------------------------ Product ------------------------
-# obsługa koszyka
+
 
 class ProductView(View):
+    '''
+    wyświetla listę dostępnych towarów/produktów
+    '''
 
     template_name = 'app1/product_view.html'
 
@@ -365,6 +433,10 @@ class ProductView(View):
         return render(request, self.template_name, ctx)
 
 class ProductAddView(View):
+    '''
+    dodaje element do listy produktów/towarów
+    sprawdza czy podany produkt już istnieje
+    '''
     template_name = 'app1/product_add.html'
 
     def get(self, request, *args, **kwargs):
@@ -438,6 +510,10 @@ class ProductAddView(View):
         return render(request, self.template_name, ctx)
 
 class ProductDetailView(View):
+    '''
+    wyświetla produkt/towar o określonym product_id
+    '''
+
     template_name = 'app1/product_detail_view.html'
 
 
@@ -464,14 +540,58 @@ class ProductDetailView(View):
         return render(request, self.template_name, ctx)
 
 
-# ------------------------ class ------------------------
-class KlientProductAddView(View):
-    template_name = 'app1/klient_product_add.html'
+# ------------------------ KlientProduct ------------------------
+# class KlientProductView(LoginRequiredMixin, View):
+class KlientProductView(View):
+    '''
+    dodaje element do listy dostępnych zestawów towarów/produktów
+    '''
+
+    template_name = 'app1/klient_product_list.html'
 
     def get(self, request, *args, **kwargs):
+        is_logged = request.user.is_authenticated
+
+        is_visible_dashboard = False
+
+
+        if len(request.user.groups.all()) != 0:
+            #  nie należy do żadnej
+            NAME_GROUP = 'magazynierzy'
+            # dla magazynierów
+            if request.user.groups.get(name=NAME_GROUP).name == NAME_GROUP:
+                is_visible_dashboard = True
+        #     dla admina
+        elif request.user.username == 'admin':
+            is_visible_dashboard = True
+
+
+
+        # breakpoint()
         products = Product.objects.all()
         sizes = Size.objects.all()
         categories = Category.objects.all()
+
+        # podaj informacje o koszyku
+        # jeśli klient nie zalogowany to nie pokazuj koszyka
+        # ograniczenie dostępu - użytkownik nie zalogowany
+        # login_url = reverse_lazy('accounts:login')
+        # czy użytkownik jest zalogowany?
+
+        # breakpoint()
+        product_ile = 0
+
+        if is_logged:
+            koszyks = Koszyk.objects.all()
+
+            for koszyk in koszyks:
+                product_ile += koszyk.ile
+
+
+        else:
+            koszyks = None
+        # breakpoint()
+
         lista_prod = []
         element = None
         # breakpoint()
@@ -480,7 +600,7 @@ class KlientProductAddView(View):
                 'pk': prod.pk,
                 'name': prod.name,
                 'price': prod.price,
-                'size': Product.objects.get(pk=prod.pk).size.values(),
+                'size': prod.size.all(),
                 'color': prod.color,
                 'brand': prod.brand,
             }
@@ -494,12 +614,15 @@ class KlientProductAddView(View):
             'product': products,
             'sizes': sizes,
             'categories': categories,
-            'lista_prods': lista_prod
+            'lista_prods': lista_prod,
+            'product_ile': product_ile,
+            'is_logged': is_logged,
+            'is_visible_dashboard': is_visible_dashboard
 
 
         }
         # form = KlientProductAddForm()
-        # breakpoint()
+        # # breakpoint()
         # ctx = {
         #     'form': form,
         # }
@@ -513,6 +636,11 @@ class KlientProductAddView(View):
         return render(request, self.template_name, ctx)
 
 class KlientProductKoszykView(LoginRequiredMixin, View):
+    '''
+    wyświetla element z listy dostępnych zestawów towarów/produktów
+    o określonym product_id
+    '''
+
     template_name = 'app1/klient_product_koszyk.html'
 
     # ograniczenie dostępu - użytkownik nie zalogowany
@@ -540,6 +668,7 @@ class KlientProductKoszykView(LoginRequiredMixin, View):
         # breakpoint()
 
         # len_koszyk = len(Koszyk.objects.all())
+        message = ''
         try:
 
             koszyk = Koszyk.objects.get(product=product_id)
@@ -564,14 +693,61 @@ class KlientProductKoszykView(LoginRequiredMixin, View):
             koszyk.ile = 1
             koszyk.save()
 
+        koszyk = Koszyk.objects.all()
+        # breakpoint()
+        ctx = {
+            # 'form': form,
+            'message': message,
+            'koszyk': koszyk,
+            }
+        return render(request, self.template_name, ctx)
+
+class KlientKoszykView(View):
+    '''
+    wyświetl zawartość koszyka
+    '''
+
+    template_name = 'app1/klient_product_koszyk_detail.html'
 
 
+    def get(self, request, *args, **kwargs):
+        koszyks = Koszyk.objects.all()
+        product = Product.objects.all()
 
+        elements = []
+        # breakpoint()
+        product_suma = 0
+        koszyk_id = 1
+        for koszyk in koszyks:
+            elements.append(
+                {'id': koszyk_id,
+                 'name': koszyk.product.name,
+                 'brand': koszyk.product.brand.name,
+                 'color': koszyk.product.color.name,
+                 'size': koszyk.product.size.values('name')[0]['name'],
+                 'category': koszyk.product.category.values('name')[0]['name'],
+                 'price': koszyk.product.price,
+                 'ile': koszyk.ile
+                 }
+            )
+            koszyk_id += 1
+            product_suma += koszyk.product.price * koszyk.ile
 
+        message = None
 
         # breakpoint()
         ctx = {
-            'form': form,
             'message': message,
+            'elements': elements,
+            'product_suma': product_suma,
+        }
+        return render(request, self.template_name, ctx)
+
+    def post(self, request, *args, **kwargs):
+        koszyk = Koszyk.objects.all()
+        ctx = {
+            # 'form': form,
+            'message': message,
+            'koszyk': koszyk,
             }
         return render(request, self.template_name, ctx)

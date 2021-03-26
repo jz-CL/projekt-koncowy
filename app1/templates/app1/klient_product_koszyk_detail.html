@@ -1,0 +1,70 @@
+{#{% extends 'app1/base.html' %}#}
+{% extends "app1/__base__.html" %}
+{% block title %}{% endblock title %}
+
+{% block content %}
+    {% if message %}
+	    <h4>{{ message }}</h4>
+    {% endif %}
+    <div class="dashboard-header m-4">
+
+    </div>
+    <div class="m-4 p-4 border-dashed">
+            <table class="table">
+                <h2 class="dashboard-content-title">
+                    Koszyk:<br>
+                </h2>
+                <tbody>
+                <thead>
+                    <tr class="d-flex text-color-darker">
+                        <th scope="col" class="col-1">ID</th>
+                        <th scope="col" class="col-2">BRAND</th>
+                        <th scope="col" class="col-2">TOWAR</th>
+                        <th scope="col" class="col-2">CATEGORY</th>
+                        <th scope="col" class="col-1">SIZE</th>
+                        <th scope="col" class="col-1">COLOR</th>
+                        <th scope="col" class="col-1">SZT.</th>
+                        <th scope="col" class="col-2">PRICE</th>
+
+
+                    </tr>
+                </thead>
+                    {% for element in elements %}
+                        <tr class="d-flex">
+
+                             <td class="col-1">{{ element.id }}</td>
+                             <td class="col-2">{{ element.brand }}</td>
+                             <td class="col-2">{{ element.name }}</td>
+                             <td class="col-2">{{ element.category }}</td>
+                             <td class="col-1">{{ element.size }}</td>
+                             <td class="col-1">{{ element.color }}</td>
+                            <td class="col-1">{{ element.ile }}</td>
+                             <td class="col-2">{{ element.price }} zł</td>
+
+                        </tr>
+                    {% endfor %}
+                    <tr class="d-flex">
+                     <td class="col-1"></td>
+                     <td class="col-2"></td>
+                     <td class="col-2"></td>
+                     <td class="col-2"></td>
+                     <td class="col-1"></td>
+                     <td class="col-1"></td>
+                     <td class="col-1">SUMA:</td>
+                     <td class="col-2">{{ product_suma }} zł</td>
+
+                    </tr>
+                </tbody>
+            </table>
+----------------------------------
+            </br>
+            <a href="{% url 'klient-product' %}"
+                class="btn btn-warning rounded-0">Lista Produktów</a>
+                </a>
+                </br></br>
+            <a href="{% url 'klient-product' %}"
+                class="btn btn-warning rounded-0">Zamawiaj</a>
+                </a>
+
+    </div>
+{% endblock %}
