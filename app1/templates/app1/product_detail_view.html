@@ -8,7 +8,7 @@
     <div class="m-4 p-4 border-dashed">
         <table class="table">
             <h2 class="dashboard-content-title">
-            Produkt:<br>
+            Szczegóły produktu:<br>
         </h2>
         <tbody>
 
@@ -22,14 +22,35 @@
         {{ category}}<br>
     {% endfor %}
 
-  </tbody>
-         </table>
+    </tbody>
+    </table>
+    <form action="/dodaj_do_koszyka/{{ product.pk }}" method="post">
+        {% csrf_token %}
+        <br>
+            {% if request.user.is_authenticated %}
+                <input type="submit" value="Dodaj do koszyka"
+                       class="btn btn-warning rounded-0">
+            {% endif %}
+    </form>
+    </br>
+        <a href="{% url 'klient-product' %}"
+        class="btn btn-warning rounded-0">Lista Produktów</a>
+        </a>
+        </br></br>
 
-    ----------------------------------
+      {% if is_logged %}
+        {% if is_visible_dashboard %}
+   ----------------------------------
  </br>
-    <a href="{% url 'dashboard' %}"
-    class="btn btn-warning rounded-0">Dashboard</a>
-    </a>
+
+{#    tylko super user#}
+{#    {% if perms.magazynierzy %}#}
+
+        <a href="{% url 'dashboard' %}"
+        class="btn btn-warning rounded-0">Dashboard</a>
+        </a>
+        {% endif %}
+    {% endif %}
     </div>
 
 {% endblock %}

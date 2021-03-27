@@ -101,6 +101,20 @@ def test_color_add_view(client):
     assert Color.objects.filter(kod="K")
     assert response.status_code == 302
 
+# pytest app1/tests.py::test_color_detail_view -vvv --pdb
+
+@pytest.mark.django_db
+def test_color_detail_view(addColor, client):
+    response = client.get('/color_detail/1')
+
+    # url = reverse(
+    #     'color_detail', kwargs={'pk': 1}
+    # )
+    #
+    # response = client.get(url)
+
+    assert response.context['color'].name == 'czarny'
+    assert response.status_code == 200
 # ------------------ brand -------------------------
 # pytest app1/tests.py::test_brand_view -v
 
@@ -126,12 +140,39 @@ def test_brand_add_view(client):
     assert Brand.objects.filter(kod="PE")
     assert response.status_code == 302
 
+# pytest app1/tests.py::test_brand_detail_view -vvv --pdb
+
+@pytest.mark.django_db
+def test_brand_detail_view(addBrand, client):
+    response = client.get('/brand_detail/1')
+
+    # url = reverse(
+    #     'brand_detail', kwargs={'pk': 1}
+    # )
+    #
+    # response = client.get(url)
+
+    assert response.context['brand'].name == 'Guess'
+    assert response.status_code == 200
+
 # ------------------ product -------------------------
 # pytest app1/tests.py::test_product_view -v
 
 @pytest.mark.django_db
 def test_product_view(addProduct, client):
 
+    response = client.get('/product/')
+    assert response.status_code == 200
+
+    #  z widoku z funkcji get
+    assert len(response.context['products']) == 2
+
+# pytest app1/tests.py::test_product_usr_view -vvv --pdb
+
+@pytest.mark.django_db
+def test_product_usr_view(addProduct, user, client):
+
+    client.force_login(user)
     response = client.get('/product/')
     assert response.status_code == 200
 
@@ -159,6 +200,73 @@ def test_product_add_view(addProductView, client):
 
     # assert response.context['form'].errors
     assert Product.objects.filter(name="PeP")
+    assert response.status_code == 302
+
+# pytest app1/tests.py::test_product_add_usr_view -vvv --pdb
+
+@pytest.mark.django_db
+def test_product_add_usr_view(addProductView, user, client):
+    (brand, category, color, size, product) = addProductView
+
+    client.force_login(user)
+
+    response = client.post('/product_add/',
+                           {'name': 'PeP',
+                            'description': 'cośTam',
+                            'price': 100,
+                            'current_quantity': 25,
+                            'category': category.pk,
+                            'size': size.pk,
+                            'brand': brand.pk,
+                            'identifier_exists': brand.kod + category.kod + size.kod,
+                            'color': color.pk}
+                           )
+
+    # assert response.context['form'].errors
+    assert Product.objects.filter(name="PeP")
+    assert response.status_code == 302
+
+# pytest app1/tests.py::test_product_detail_view -vvv --pdb
+
+@pytest.mark.django_db
+def test_product_detail_view(addProduct, client):
+    response = client.get('/product_detail/1')
+
+    # url = reverse(
+    #     'product_detail', kwargs={'pk': 1}
+    # )
+    #
+    # response = client.get(url)
+
+    assert response.context['product'].name == 'Sukienka koktajlowa'
+    assert response.status_code == 200
+
+
+# pytest app1/tests.py::test_KlientProduct_view -vvv --pdb
+
+@pytest.mark.django_db
+def test_KlientProduct_view(client):
+    response = client.get('')
+    assert response.status_code == 200
+
+# pytest app1/tests.py::test_KlientProduct_view -vvv --pdb
+
+@pytest.mark.django_db
+def test_KlientProduct_view(user, client):
+    response = client.get('')
+    assert response.status_code == 200
+
+# pytest app1/tests.py::test_KlientKoszykAdd_view -vvv --pdb
+@pytest.mark.django_db
+def test_KlientKoszykAdd_view(client):
+    response = client.get('/dodaj_do_koszyka/2')
+    assert response.status_code == 302
+
+# pytest app1/tests.py::test_KlientKoszykDelete_view -vvv --pdb
+@pytest.mark.django_db
+def test_KlientKoszykDelete_view(user, client):
+    client.force_login(user)
+    response = client.get('/koszyk_delete/')
     assert response.status_code == 302
 
 # def test_login(client, funkcjatworzacaUser):

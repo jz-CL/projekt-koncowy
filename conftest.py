@@ -1,6 +1,7 @@
 import pytest
 
 # from django.test import Client
+from django.contrib.auth.models import User, AnonymousUser
 from app1.models import Category, Size, Color, Brand, Product
 # from django.core.management import call_command
 
@@ -104,3 +105,11 @@ def addProductView(addBrand, addCategory, addColor, addSize, addProduct):
     size = Size.objects.get(name='36')
 
     return (brand, category, color, size, addProduct)
+
+@pytest.fixture()
+def user():
+    return User.objects.create_user(
+        username='user_testowicz',
+        password='pass',
+        email='mail@test.cl',
+    )

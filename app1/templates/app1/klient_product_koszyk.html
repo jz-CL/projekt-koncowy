@@ -26,13 +26,12 @@
         <form action="/" method="post">
             {% csrf_token %}
 
-            {{ form.as_p }}<br/>
-{#          jeśli zalogowany#}
+
             {% if request.user.is_authenticated %}
                 <input type="submit" value="Dodaj do koszyka"
                        class="btn btn-warning rounded-0">
+
             {% endif %}
-{#            w przeciwnym razie idż do strony logowania #}
         </form>
     </tbody>
     </table>

@@ -44,7 +44,7 @@
                 <th scope="col" class="col-3">TOWAR</th>
                 <th scope="col" class="col-1">SIZE</th>
                 <th scope="col" class="col-1">COLOR</th>
-                <th scope="col" class="col-1">PRICE</th>
+                <th scope="col" class="col-2">PRICE</th>
                 <th scope="col" class="col-2"></th>
             </tr>
         </thead>
@@ -55,26 +55,27 @@
              <td class="col-3">{{ product.name }}</td>
              <td class="col-1">{{ product.size.0 }}</td>
              <td class="col-1">{{ product.color }}</td>
-             <td class="col-1">{{ product.price }} zł</td>
+             <td class="col-2">{{ product.price }} zł</td>
 
 {#                 <td class="col-1">#}
 {#                </td>#}
 
                  <td class="col-2">
-                    <a href="/dodaj_do_koszyka/{{ product.pk }}"
+
+                    <a href="/product_detail/{{ product.pk }}"
                     class="btn btn-warning rounded-0">Szczegóły</a>
 
                      <form action="/dodaj_do_koszyka/{{ product.pk }}" method="post">
-                    {% csrf_token %}
-
-                    {{ form }}<br>
+                        {% csrf_token %}
+                        <br>
+{#                    {{ form }}#}
 {#                      jeśli zalogowany#}
                         {% if request.user.is_authenticated %}
 
                             <input type="submit" value="Dodaj do koszyka" class="btn btn-warning rounded-0">
                         {% endif %}
 
-                </form>
+                    </form>
                 </td>
 
              </tr>

@@ -24,7 +24,8 @@ from app1.views import (
     ProductView, ProductAddView, ProductDetailView,
 
     DashboardView,
-    KlientProductView, KlientProductKoszykView, KlientKoszykView,
+    KlientProductView, KlientKoszykAddView,
+    KlientKoszykView, KlientKoszykDelete,
 )
 
 urlpatterns = [
@@ -46,8 +47,9 @@ urlpatterns = [
     path('product_detail/<int:pk>', ProductDetailView.as_view(), name='product_detail'),
     path('dashboard/', DashboardView.as_view(), name='dashboard'),
     path('', KlientProductView.as_view(), name='klient-product'),
-    path('dodaj_do_koszyka/<int:pk>', KlientProductKoszykView.as_view(), name='klient-product'),
+    path('dodaj_do_koszyka/<int:pk>', KlientKoszykAddView.as_view(), name='klient-product'),
     path('koszyk/', KlientKoszykView.as_view(), name='klient-koszyk'),
+    path('koszyk_delete/', KlientKoszykDelete.as_view(), name='klient-koszyk-delete'),
 
 
 

@@ -539,6 +539,41 @@ class ProductDetailView(View):
 
         return render(request, self.template_name, ctx)
 
+def refresh_lista_products(products):
+    '''
+    odśwież listę produktów
+    '''
+
+    lista_prod = []
+
+    for prod in products:
+        element = {
+            'pk': prod.pk,
+            'name': prod.name,
+            'price': prod.price,
+            'size': prod.size.all(),
+            'color': prod.color,
+            'brand': prod.brand,
+        }
+        lista_prod.append(element)
+    return lista_prod
+
+def is_visible_dashboard(request):
+    '''
+    ustawiamy widoczność buttonu dashboard
+    '''
+    is_visible_dashbrd = False
+
+    if len(request.user.groups.all()) != 0:
+        #  nie należy do żadnej
+        NAME_GROUP = 'magazynierzy'
+        # dla magazynierów
+        if request.user.groups.get(name=NAME_GROUP).name == NAME_GROUP:
+            is_visible_dashbrd = True
+    #     dla admina
+    elif request.user.username == 'admin':
+        is_visible_dashbrd = True
+    return is_visible_dashbrd
 
 # ------------------------ KlientProduct ------------------------
 # class KlientProductView(LoginRequiredMixin, View):
@@ -551,64 +586,24 @@ class KlientProductView(View):
 
     def get(self, request, *args, **kwargs):
         is_logged = request.user.is_authenticated
+        is_visible_dashbrd = is_visible_dashboard(request)
 
-        is_visible_dashboard = False
-
-
-        if len(request.user.groups.all()) != 0:
-            #  nie należy do żadnej
-            NAME_GROUP = 'magazynierzy'
-            # dla magazynierów
-            if request.user.groups.get(name=NAME_GROUP).name == NAME_GROUP:
-                is_visible_dashboard = True
-        #     dla admina
-        elif request.user.username == 'admin':
-            is_visible_dashboard = True
-
-
-
-        # breakpoint()
-        products = Product.objects.all()
-        sizes = Size.objects.all()
-        categories = Category.objects.all()
-
-        # podaj informacje o koszyku
-        # jeśli klient nie zalogowany to nie pokazuj koszyka
-        # ograniczenie dostępu - użytkownik nie zalogowany
-        # login_url = reverse_lazy('accounts:login')
-        # czy użytkownik jest zalogowany?
-
-        # breakpoint()
         product_ile = 0
-
         if is_logged:
             koszyks = Koszyk.objects.all()
 
             for koszyk in koszyks:
                 product_ile += koszyk.ile
 
-
         else:
             koszyks = None
-        # breakpoint()
 
-        lista_prod = []
-        element = None
-        # breakpoint()
-        for prod in products:
-            element = {
-                'pk': prod.pk,
-                'name': prod.name,
-                'price': prod.price,
-                'size': prod.size.all(),
-                'color': prod.color,
-                'brand': prod.brand,
-            }
-            lista_prod.append(element)
+        products = Product.objects.all()
+        sizes = Size.objects.all()
+        categories = Category.objects.all()
 
-        # breakpoint()
-        # Product.objects.get(pk=1).size.values()
-        # Product.objects.get(pk=1).color.values()
+        # odświeżanie listy produktów
+        lista_prod = refresh_lista_products(products)
 
         ctx = {
             'product': products,
@@ -617,31 +612,49 @@ class KlientProductView(View):
             'lista_prods': lista_prod,
             'product_ile': product_ile,
             'is_logged': is_logged,
-            'is_visible_dashboard': is_visible_dashboard
-
-
+            'is_visible_dashboard': is_visible_dashbrd,
         }
-        # form = KlientProductAddForm()
-        # # breakpoint()
-        # ctx = {
-        #     'form': form,
-        # }
         return render(request, self.template_name, ctx)
 
     def post(self, request, *args, **kwargs):
+        is_logged = request.user.is_authenticated
+        is_visible_dashbrd = is_visible_dashboard(request)
+
+        product_ile = 0
+        if is_logged:
+            koszyks = Koszyk.objects.all()
+
+            for koszyk in koszyks:
+                product_ile += koszyk.ile
+
+        else:
+            koszyks = None
+
+        products = Product.objects.all()
+        sizes = Size.objects.all()
+        categories = Category.objects.all()
+
+        # odświeżanie listy produktów
+        lista_prod = refresh_lista_products(products)
+
         ctx = {
-            # 'form': form,
-            # 'message': message,
-            }
+            'product': products,
+            'sizes': sizes,
+            'categories': categories,
+            'lista_prods': lista_prod,
+            'product_ile': product_ile,
+            'is_logged': is_logged,
+            'is_visible_dashboard': is_visible_dashbrd,
+        }
         return render(request, self.template_name, ctx)
 
-class KlientProductKoszykView(LoginRequiredMixin, View):
+class KlientKoszykAddView(LoginRequiredMixin, View):
     '''
     wyświetla element z listy dostępnych zestawów towarów/produktów
     o określonym product_id
     '''
 
-    template_name = 'app1/klient_product_koszyk.html'
+    template_name = 'app1/klient_product_list.html'
 
     # ograniczenie dostępu - użytkownik nie zalogowany
     login_url = reverse_lazy('accounts:login')
@@ -649,10 +662,10 @@ class KlientProductKoszykView(LoginRequiredMixin, View):
     success_url = 'klient-product'
 
     def get(self, request, *args, **kwargs):
+
         product_id = kwargs['pk']
 
         product = get_object_or_404(Product, pk=product_id)
-        # breakpoint()
         size = product.size.values()[0]['name']
         color = product.color
 
@@ -665,7 +678,7 @@ class KlientProductKoszykView(LoginRequiredMixin, View):
 
     def post(self, request, *args, **kwargs):
         product_id = kwargs['pk']
-        # breakpoint()
+
 
         # len_koszyk = len(Koszyk.objects.all())
         message = ''
@@ -674,9 +687,6 @@ class KlientProductKoszykView(LoginRequiredMixin, View):
             koszyk = Koszyk.objects.get(product=product_id)
         except Koszyk.DoesNotExist:
             koszyk = None
-
-
-            # koszyk = get_object_or_404(Koszyk, product = product_id)
 
             # breakpoint()
             # sprawdzaj czy jest już towar o takim id
@@ -693,13 +703,37 @@ class KlientProductKoszykView(LoginRequiredMixin, View):
             koszyk.ile = 1
             koszyk.save()
 
-        koszyk = Koszyk.objects.all()
-        # breakpoint()
+
+        # obsługa odświerzania listy produktów
+        is_logged = request.user.is_authenticated
+        is_visible_dashbrd = is_visible_dashboard(request)
+
+        product_ile = 0
+        if is_logged:
+            koszyks = Koszyk.objects.all()
+
+            for koszyk in koszyks:
+                product_ile += koszyk.ile
+
+        else:
+            koszyks = None
+
+        products = Product.objects.all()
+        sizes = Size.objects.all()
+        categories = Category.objects.all()
+
+        # odświeżanie listy produktów
+        lista_prod = refresh_lista_products(products)
+
         ctx = {
-            # 'form': form,
-            'message': message,
-            'koszyk': koszyk,
-            }
+            'product': products,
+            'sizes': sizes,
+            'categories': categories,
+            'lista_prods': lista_prod,
+            'product_ile': product_ile,
+            'is_logged': is_logged,
+            'is_visible_dashboard': is_visible_dashbrd,
+        }
         return render(request, self.template_name, ctx)
 
 class KlientKoszykView(View):
@@ -709,13 +743,8 @@ class KlientKoszykView(View):
 
     template_name = 'app1/klient_product_koszyk_detail.html'
 
-
-    def get(self, request, *args, **kwargs):
-        koszyks = Koszyk.objects.all()
-        # product = Product.objects.all()
-
+    def fill_list(self, koszyks):
         elements = []
-        # breakpoint()
         product_suma = 0
         koszyk_id = 1
         for koszyk in koszyks:
@@ -733,9 +762,16 @@ class KlientKoszykView(View):
             koszyk_id += 1
             product_suma += koszyk.product.price * koszyk.ile
 
+        return (elements, product_suma)
+
+    def get(self, request, *args, **kwargs):
+        koszyks = Koszyk.objects.all()
+        elements = []
+        # breakpoint()
+        elements, product_suma = self.fill_list(koszyks)
         message = None
 
-        # breakpoint()
+
         ctx = {
             'message': message,
             'elements': elements,
@@ -744,10 +780,43 @@ class KlientKoszykView(View):
         return render(request, self.template_name, ctx)
 
     def post(self, request, *args, **kwargs):
-        koszyk = Koszyk.objects.all()
+        koszyks = Koszyk.objects.all()
+
         ctx = {
             # 'form': form,
             'message': message,
-            'koszyk': koszyk,
+            'koszyk': koszyks,
+            }
+        return render(request, self.template_name, ctx)
+
+class KlientKoszykDelete(View):
+    '''
+    Usuwanie zawartości koszyka
+    '''
+
+    template_name = 'app1/klient_product_list.html'
+    def get(self, request, *args, **kwargs):
+        # breakpoint()
+        koszyks = Koszyk.objects.all()
+        koszyks.delete()
+
+        # get
+        ctx = {
+            # 'message': message,
+            # 'elements': elements,
+            # 'product_suma': product_suma,
+        }
+        # return render(request, self.template_name, ctx)
+        return redirect('klient-product')
+    def post(self, request, *args, **kwargs):
+
+        message =''
+
+        # breakpoint()
+        # post
+        ctx = {
+            # 'form': form,
+            'message': message,
+            'koszyk': koszyks,
             }
         return render(request, self.template_name, ctx)
